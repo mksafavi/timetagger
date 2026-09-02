@@ -3741,6 +3741,29 @@ class AnalyticsWidget(Widget):
             ctx.textAlign = "left"
             ctx.fillStyle = COLORS.prim2_clr
             ctx.fillText(duration_sec, x_ref_duration + 1, ty)
+
+        # Draw target stats
+        tagz = sorted(bar.tagz.split(" "))
+        tag_info = window.store.settings.get_tag_info(tagz.join(" "))
+        best_target = self._select_best_target_matching_current_time_range(
+            tag_info.targets
+        )
+        ctx.font = (SMALLER * FONT.size) + "px " + FONT.default
+        ctx.textAlign = "right"
+        ctx.fillStyle = COLORS.prim2_clr
+        if best_target:
+            done_this_period = bar.t
+            target_this_period = 3600 * best_target.hours * best_target.factor
+            left_this_period = target_this_period - done_this_period
+            duration_left = dt.duration_string(abs(left_this_period))
+            suffix = "left" if left_this_period >= 0 else "over"
+            if target_this_period > 0:
+                perc = 100 * done_this_period / target_this_period
+                text = f"{perc:0.0f}% ({duration_left} {suffix})"
+                ctx.fillText(
+                    text, x_ref_duration - ctx.measureText(duration_text).width - 12, ty
+                )
+
         # Draw tags
         tags = [tag for tag in bar.subtagz.split(" ")]
         opt = {
