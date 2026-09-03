@@ -3752,7 +3752,12 @@ class AnalyticsWidget(Widget):
         ctx.textAlign = "right"
         ctx.fillStyle = COLORS.prim2_clr
         if best_target:
-            done_this_period = bar.t
+            done_this_period = 0
+            # Add the time of all bars with matching tags into this period
+            for b in self._tag_bars_dict.values():
+                b_tagz = b.tagz.split(" ")
+                if all([t in b_tagz for t in tagz]):
+                    done_this_period += b.t
             target_this_period = 3600 * best_target.hours * best_target.factor
             left_this_period = target_this_period - done_this_period
             duration_left = dt.duration_string(abs(left_this_period))
